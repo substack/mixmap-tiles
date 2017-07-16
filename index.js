@@ -50,6 +50,7 @@ module.exports = function (map, opts) {
 
   var layer = map.addLayer({
     viewbox: function (bbox, zoom, cb) {
+      zoom = Math.round(zoom)
       var result = {}
       for (var i = 0; i < layers.length; i++) {
         if (zoom >= layers[i].zoom) {
