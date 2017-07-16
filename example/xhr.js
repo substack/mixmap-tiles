@@ -1,4 +1,4 @@
-var mixmap = require('mixmap')
+var mixmap = require('../')
 var glsl = require('glslify')
 var xhr = require('xhr')
 
@@ -8,15 +8,7 @@ var map = mix.create()
 var mixtiles = require('../')
 var tiles = mixtiles(map, {
   layers: require('./layers.json'),
-  load: function (file, cb) {
-    var opts = { url: file, responseType: 'arraybuffer' }
-    xhr(opts, function (err, res, body) {
-      if (err) return cb(err)
-      else if (!/^2/.test(res.statusCode)) {
-        return cb(new Error('status code ' + res.statusCode))
-      } else cb(null, { type: res['content-type'], data: body })
-    })
-  }
+  load: require('../xhr')
 })
 
 window.addEventListener('keydown', function (ev) {
