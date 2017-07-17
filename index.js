@@ -98,7 +98,6 @@ module.exports = function (map, opts) {
       drawTile.props = drawTile.props.filter(function (p) {
         return p.key !== key
       })
-      map.draw()
     }
   })
   return { draw: drawTile, layer: layer }

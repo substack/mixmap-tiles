@@ -1,0 +1,15 @@
+{
+  "name": "mixmap-tiles",
+  "version": "1.0.0",
+  "description": "tile loader for mixmap",
+  "dependencies": {
+    "xhr": "^2.4.0"
+  },
+  "keywords": [
+    "mixmap",
+    "tiles",
+    "maps",
+    "geo"
+  ],
+  "license": "public domain"
+}

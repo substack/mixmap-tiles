@@ -1,5 +1,4 @@
 var mixmap = require('mixmap')
-var glsl = require('glslify')
 var xhr = require('xhr')
 
 var mix = mixmap(require('regl'))
