@@ -51,13 +51,16 @@ module.exports = function (map, opts) {
   var layer = map.addLayer({
     viewbox: function (bbox, zoom, cb) {
       zoom = Math.round(zoom)
+      if (typeof layers === 'function') {
+        return layers(bbox, zoom, cb)
+      }
       var result = {}
       for (var i = 0; i < layers.length; i++) {
         if (zoom >= layers[i].zoom) {
           var keys = Object.keys(layers[i].tiles)
           for (var j = 0; j < keys.length; j++) {
             var key = keys[j]
-            var zkey = layers[i].zoom + '!' + i + '!' + key
+            var zkey = layers[i].zoom + '!' + key
             result[zkey] = layers[i].tiles[key]
           }
         }
@@ -65,10 +68,8 @@ module.exports = function (map, opts) {
       cb(null, result)
     },
     add: function (key, bbox) {
-      var parts = key.split('!')
-      var zoom = Number(parts[0])
-      var layeri = Number(parts[1])
-      var file = key.replace(/^\d+!\d+!/,'')
+      var zoom = Number(key.split('!')[0])
+      var file = key.replace(/^\d+!/,'')
       var prop = {
         key: key,
         zindex: 1 + zoom,
@@ -97,6 +98,7 @@ module.exports = function (map, opts) {
       drawTile.props = drawTile.props.filter(function (p) {
         return p.key !== key
       })
+      map.draw()
     }
   })
   return { draw: drawTile, layer: layer }
