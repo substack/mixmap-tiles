@@ -1,3 +1,6 @@
+var idlecb = window.requestIdleCallback
+  || function (f) { setTimeout(f,0) }
+
 module.exports = function (map, opts) {
   var layers = opts.layers
   var load = opts.load
@@ -48,6 +51,21 @@ module.exports = function (map, opts) {
   delete drawOpts.layers
   var drawTile = map.createDraw(drawOpts)
 
+  var queue = []
+  function enqueue (key, fn) {
+    queue.push({key:key,fn:fn})
+    if (queue.length === 1) next()
+    function next () {
+      if (queue[0]) queue[0].fn(function () {
+        setTimeout(function () {
+          idlecb(function () {
+            queue.shift()
+            next()
+          })
+        }, 20)
+      })
+    }
+  }
   var layer = map.addLayer({
     viewbox: function (bbox, zoom, cb) {
       zoom = Math.round(zoom)
@@ -85,18 +103,27 @@ module.exports = function (map, opts) {
       map.draw()
       load(file, function (err, res) {
         if (err) return console.error(err)
-        var img = new Image
-        var blob = new Blob([res.data])
-        img.onload = function () {
-          prop.texture = map.regl.texture(img)
-          map.draw()
-        }
-        img.src = URL.createObjectURL(blob)
+        enqueue(key, function (cb) {
+          var img = new Image
+          var blob = new Blob([res.data])
+          img.onload = function () {
+            prop.texture = map.regl.texture(img)
+            map.draw()
+            cb()
+          }
+          img.onerror = function () {
+            cb()
+          }
+          img.src = URL.createObjectURL(blob)
+        })
       })
     },
     remove: function (key, bbox) {
       drawTile.props = drawTile.props.filter(function (p) {
         return p.key !== key
+      })
+      queue = queue.filter(function (q,i) {
+        return i === 0 || q.key !== key
       })
     }
   })
