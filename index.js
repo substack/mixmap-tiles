@@ -18,7 +18,7 @@ module.exports = function (map, opts) {
       attribute vec2 position;
       uniform vec4 viewbox;
       uniform vec2 offset;
-      uniform float zindex;
+      uniform float zindex, aspect;
       attribute vec2 tcoord;
       varying vec2 vtcoord;
       void main () {
@@ -26,8 +26,8 @@ module.exports = function (map, opts) {
         vtcoord = tcoord;
         gl_Position = vec4(
           (p.x - viewbox.x) / (viewbox.z - viewbox.x) * 2.0 - 1.0,
-          (p.y - viewbox.y) / (viewbox.w - viewbox.y) * 2.0 - 1.0,
-          1.0/(1.0+zindex), 1);
+          ((p.y - viewbox.y) / (viewbox.w - viewbox.y) * 2.0 - 1.0) * aspect,
+          1.0/(2.0+zindex), 1);
       }
     `,
     uniforms: Object.assign({
