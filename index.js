@@ -4,6 +4,7 @@ var idlecb = window.requestIdleCallback
 module.exports = function (map, opts) {
   var layers = opts.layers
   var load = opts.load
+  var dir = opts.path || ''
   var drawOpts = Object.assign({
     frag: `
       precision highp float;
@@ -48,6 +49,7 @@ module.exports = function (map, opts) {
     }
   }, opts)
   delete drawOpts.load
+  delete drawOpts.path
   delete drawOpts.layers
   var drawTile = map.createDraw(drawOpts)
 
@@ -101,7 +103,7 @@ module.exports = function (map, opts) {
       }
       drawTile.props.push(prop)
       map.draw()
-      load(file, function (err, res) {
+      load((dir ? dir + '/' : '') + file, function (err, res) {
         if (err) return console.error(err)
         enqueue(key, function (cb) {
           var img = new Image

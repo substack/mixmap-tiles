@@ -1,6 +1,4 @@
 var mixmap = require('../')
-var xhr = require('xhr')
-
 var mix = mixmap(require('regl'))
 var map = mix.create()
 
